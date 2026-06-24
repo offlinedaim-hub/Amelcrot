@@ -322,7 +322,17 @@ function vipLogin(){
     }
 }
 
-let videos = JSON.parse(localStorage.getItem("videos") || "[]");
+let videos = [
+{
+id:1,
+title:"Video 1",
+video:"video1.mp4",
+thumb:"thumbnail.png",
+cat:"HOME",
+like:0,
+dislike:0
+}
+];
 let current="HOME";
 let page=1;
 let maxPage=50;
