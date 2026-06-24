@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Amel Crot</title>
+
+<style>
+body{
+margin:0;
+font-family:Arial;
+background:#0f0f0f;
+color:white;
+}
+
+.header{
+display:flex;
+justify-content:space-between;
+align-items:center;
+padding:10px;
+background:#111;
+position:sticky;
+top:0;
+z-index:1000;
+}
+
+.title{font-size:22px;color:pink;font-weight:bold;}
+.subtitle{font-size:12px;color:#aaa;}
+.menu{font-size:28px;cursor:pointer;}
+
+/* BANNER GLOBAL */
+#banner{
+width:100%;
+max-height:140px;
+object-fit:cover;
+display:none;
+margin-top:5px;
+border-radius:8px;
+}
+
+#menuBox{
+position:fixed;
+top:0;
+left:-270px;
+width:250px;
+height:100%;
+background:#1a1a1a;
+padding:10px;
+transition:0.3s;
+z-index:2000;
+overflow:auto;
+}
+#menuBox.open{left:0}
+
+button{
+width:100%;
+padding:8px;
+margin:4px 0;
+border:none;
+border-radius:6px;
+background:#333;
+color:white;
+cursor:pointer;
+}
+
+.loginTitle{
+background:pink;
+color:black;
+padding:8px;
+text-align:center;
+border-radius:6px;
+cursor:pointer;
+font-weight:bold;
+}
+
+#loginForm{display:none;margin-top:10px;}
+
+#adminTools{
+display:none;
+margin-top:10px;
+background:#111;
+padding:10px;
+border-radius:10px;
+}
+
+label{
+font-size:12px;
+color:#ccc;
+display:block;
+margin-top:6px;
+}
+
+input,select{
+width:100%;
+padding:6px;
+margin:5px 0;
+border:none;
+border-radius:6px;
+}
+
+/* GRID */
+.grid{
+display:grid;
+grid-template-columns:repeat(2,1fr);
+gap:8px;
+padding:10px;
+}
+
+/* CARD */
+.card{
+background:#1a1a1a;
+border-radius:10px;
+overflow:hidden;
+cursor:pointer;
+}
+
+/* THUMBNAIL FIX FULL (NO CROP) */
+.card img{
+width:100%;
+aspect-ratio:16/9;
+object-fit:contain;
+background:#000;
+display:block;
+}
+
+.caption{
+padding:4px;
+font-size:11px;
+text-align:center;
+background:#111;
+}
+
+.likeBoxList{
+display:flex;
+justify-content:space-between;
+padding:3px 5px;
+font-size:11px;
+color:#ccc;
+}
+
+.delBtn{
+background:red;
+width:100%;
+border:none;
+padding:5px;
+color:white;
+font-size:11px;
+cursor:pointer;
+}
+
+/* PLAYER */
+#playerPage{
+display:none;
+padding:10px;
+}
+
+#playerPage video{
+width:100%;
+border-radius:10px;
+background:black;
+}
+
+.likeBox{
+display:flex;
+justify-content:space-between;
+padding:5px;
+}
+
+.likeBox button{
+width:48%;
+font-size:12px;
+}
+
+/* PAGINATION */
+.pagination{
+display:flex;
+justify-content:center;
+gap:10px;
+padding:10px;
+}
+
+.page{
+padding:6px 12px;
+background:#222;
+border-radius:6px;
+cursor:pointer;
+}
+</style>
+</head>
+
+<body>
+
+<div id="ageGate" style="position:fixed;top:0;left:0;width:100%;height:100%;background:black;display:flex;justify-content:center;align-items:center;z-index:99999;">
+<div style="background:#1a1a1a;padding:20px;border-radius:15px;text-align:center;color:white;">
+<h2>🔞 Konfirmasi Umur</h2>
+<p>Apakah kamu sudah umur 18 tahun?</p>
+
+<button onclick="enterSite()">Ya</button>
+<button onclick="denySite()">Tidak</button>
+</div>
+</div>
+
+<!-- HEADER -->
+<div class="header">
+<div>
+<div class="title">Amel Crot</div>
+<div class="subtitle" id="activeCat">HOME</div>
+</div>
+<div style="display:flex;align-items:center;gap:10px;">
+    <span id="clock">00:00:00</span>
+    <div class="menu" onclick="toggleMenu()">☰</div>
+</div>
+</div>
+
+<!-- GLOBAL BANNER -->
+<img id="banner">
+
+<!-- MENU -->
+<div id="menuBox">
+
+<h3>MENU</h3>
+
+<button onclick="setView('HOME')">Home</button>
+<button onclick="setView('SMP')">SMP</button>
+<button onclick="setView('SMA')">SMA</button>
+<button onclick="setView('CHINA')">China</button>
+<button onclick="setView('VIRAL')">Viral</button>
+<button onclick="vipLogin()">AMEL VIP</button>
+<button onclick="window.open('https://wa.me/6282156411609','_blank')">
+📣 LAPORAN 
+</button>
+
+<hr>
+
+<div class="loginTitle" onclick="toggleLogin()">Login Admin</div>
+
+<div id="loginForm">
+<input id="user" placeholder="Username">
+<input id="pass" type="password" placeholder="Password">
+<button onclick="login()">Login</button>
+</div>
+
+<div id="adminTools">
+
+<h4>UPLOAD VIDEO</h4>
+
+<label>Kategori</label>
+<select id="catUpload">
+<option>HOME</option>
+<option>SMP</option>
+<option>SMA</option>
+<option>CHINA</option>
+<option>VIRAL</option>
+<option>VIP</option>
+</select>
+
+<label>Judul</label>
+<input id="title">
+
+<label>Video</label>
+<input type="file" id="videoFile" accept="video/*">
+
+<label>Thumbnail</label>
+<input type="file" id="thumbFile" accept="image/*">
+
+<button onclick="upload()">Upload</button>
+<button onclick="toggleDelete()">Mode Hapus</button>
+
+<hr>
+
+
+
+<button onclick="logout()">Logout</button>
+
+</div>
+
+</div>
+
+<!-- GRID -->
+<div class="grid" id="list"></div>
+
+<!-- PLAYER -->
+<div id="playerPage">
+
+<button onclick="closePlayer()">⬅ Kembali</button>
+
+<div id="playerBox"></div>
+
+<div class="likeBox">
+<button onclick="likeVideo(currentId)">👍 <span id="likeCount">0</span></button>
+<button onclick="dislikeVideo(currentId)">👎 <span id="dislikeCount">0</span></button>
+</div>
+
+</div>
+
+<!-- PAGINATION -->
+<div class="pagination">
+<div class="page" onclick="prev()">Prev</div>
+<div class="page" id="pageNum">1 / 50</div>
+<div class="page" onclick="next()">Next</div>
+<div class="page" onclick="goLast()">Last</div>
+</div>
+
+<script>
+function laporan(){
+    let pesan = prompt("Masukkan laporan:");
+
+    if(pesan){
+        alert("Laporan terkirim!");
+    }
+}
+function vipLogin(){
+    let pass = prompt("Masukkan Password VIP");
+
+    if(pass === "AMEL12"){
+        setView("VIP");
+    }else{
+        alert("Password Salah!");
+    }
+}
+
+let videos = JSON.parse(localStorage.getItem("videos") || "[]");
+let current="HOME";
+let page=1;
+let maxPage=50;
+let perPage=10;
+
+let isAdmin=false;
+let deleteMode=false;
+let currentId=null;
+
+let userLikes = JSON.parse(localStorage.getItem("userLikes") || "{}");
+
+/* MENU */
+function toggleMenu(){
+document.getElementById("menuBox").classList.toggle("open");
+}
+
+/* CATEGORY */
+function setView(cat){
+current=cat;
+page=1;
+document.getElementById("activeCat").innerText=cat;
+document.getElementById("menuBox").classList.remove("open");
+showBanner(); /* GLOBAL BANNER */
+render();
+}
+
+/* LOGIN */
+function toggleLogin(){
+document.getElementById("loginForm").style.display="block";
+}
+
+function login(){
+let u=document.getElementById("user").value;
+let p=document.getElementById("pass").value;
+
+if(u==="admin" && p==="1234"){
+isAdmin=true;
+document.getElementById("adminTools").style.display="block";
+document.getElementById("loginForm").style.display="none";
+alert("Login sukses");
+}else alert("Login gagal");
+}
+
+function logout(){
+isAdmin=false;
+deleteMode=false;
+document.getElementById("adminTools").style.display="none";
+}
+
+/* UPLOAD VIDEO */
+function upload(){
+if(!isAdmin) return;
+
+let cat=document.getElementById("catUpload").value;
+let title=document.getElementById("title").value;
+let v=document.getElementById("videoFile").files[0];
+let t=document.getElementById("thumbFile").files[0];
+
+let vr=new FileReader();
+let tr=new FileReader();
+
+vr.onload=()=>{
+tr.onload=()=>{
+
+videos.push({
+id:Date.now(),
+title,
+video:vr.result,
+thumb:tr.result,
+cat,
+like:0,
+dislike:0
+});
+
+localStorage.setItem("videos",JSON.stringify(videos));
+render();
+
+};
+
+tr.readAsDataURL(t);
+};
+
+vr.readAsDataURL(v);
+}
+
+/* BANNER GLOBAL */
+function uploadBanner(){
+if(!isAdmin) return;
+
+let file=document.getElementById("bannerFile").files[0];
+if(!file) return alert("Pilih banner dulu");
+
+let reader=new FileReader();
+
+reader.onload=()=>{
+localStorage.setItem("bannerImg",reader.result);
+showBanner();
+};
+
+reader.readAsDataURL(file);
+}
+
+function showBanner(){
+let img=localStorage.getItem("bannerImg");
+let b=document.getElementById("banner");
+
+if(img){
+b.src=img;
+b.style.display="block";
+}else{
+b.style.display="none";
+}
+}
+
+/* DELETE */
+function toggleDelete(){
+deleteMode=!deleteMode;
+render();
+}
+
+function deleteVideo(id){
+videos=videos.filter(v=>v.id!==id);
+localStorage.setItem("videos",JSON.stringify(videos));
+render();
+}
+
+/* OPEN VIDEO */
+function openVideo(id){
+let v=videos.find(x=>x.id===id);
+if(!v) return;
+
+currentId=id;
+
+document.getElementById("list").style.display="none";
+document.querySelector(".pagination").style.display="none";
+document.getElementById("playerPage").style.display="block";
+
+document.getElementById("playerBox").innerHTML=
+`<video id="mainVideo" src="${v.video}" controls autoplay></video>`;
+
+setTimeout(()=>{
+let vid=document.getElementById("mainVideo");
+vid.muted=false;
+vid.volume=1;
+vid.play().catch(()=>{});
+},200);
+
+document.getElementById("likeCount").innerText=v.like;
+document.getElementById("dislikeCount").innerText=v.dislike;
+}
+
+/* CLOSE VIDEO */
+function closePlayer(){
+let vid=document.getElementById("mainVideo");
+
+if(vid){
+vid.pause();
+vid.currentTime=0;
+vid.src="";
+vid.load();
+}
+
+document.getElementById("list").style.display="grid";
+document.querySelector(".pagination").style.display="flex";
+document.getElementById("playerPage").style.display="none";
+}
+
+/* LIKE DISLIKE */
+function likeVideo(id){
+let v=videos.find(x=>x.id===id);
+if(!v) return;
+
+if(userLikes["l"+id]) return;
+
+userLikes["l"+id]=true;
+v.like++;
+
+localStorage.setItem("userLikes",JSON.stringify(userLikes));
+localStorage.setItem("videos",JSON.stringify(videos));
+
+render();
+openVideo(id);
+}
+
+function dislikeVideo(id){
+let v=videos.find(x=>x.id===id);
+if(!v) return;
+
+if(userLikes["d"+id]) return;
+
+userLikes["d"+id]=true;
+v.dislike++;
+
+localStorage.setItem("userLikes",JSON.stringify(userLikes));
+localStorage.setItem("videos",JSON.stringify(videos));
+
+render();
+openVideo(id);
+}
+
+/* PAGINATION */
+function next(){if(page<maxPage){page++;render();}}
+function prev(){if(page>1){page--;render();}}
+function goLast(){page=maxPage;render();}
+
+/* RENDER */
+function render(){
+let list=document.getElementById("list");
+list.innerHTML="";
+
+let f=videos.filter(v=>v.cat===current);
+let start=(page-1)*perPage;
+
+f.slice(start,start+perPage).forEach(v=>{
+list.innerHTML+=`
+<div class="card" onclick="openVideo(${v.id})">
+
+<img src="${v.thumb}">
+<div class="caption">${v.title}</div>
+
+<div class="likeBoxList">
+<span>👍 ${v.like}</span>
+<span>👎 ${v.dislike}</span>
+</div>
+
+${deleteMode && isAdmin?`<button class="delBtn" onclick="event.stopPropagation();deleteVideo(${v.id})">HAPUS</button>`:""}
+
+</div>`;
+});
+
+document.getElementById("pageNum").innerText=page+" / "+maxPage;
+}
+
+/* INIT */
+showBanner();
+render();
+function updateClock(){
+    const now = new Date();
+    document.getElementById("clock").innerText =
+        now.toLocaleTimeString("id-ID");
+}
+
+setInterval(updateClock, 1000);
+updateClock();
+</script>
+<script>
+function enterSite(){
+document.getElementById("ageGate").style.display="none";
+}
+
+function denySite(){
+document.body.innerHTML="<h1 style='color:red;text-align:center;margin-top:100px'>GAGAL AKSES</h1>";
+}
+</script>
+</body>
+</html>
